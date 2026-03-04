@@ -1,0 +1,56 @@
+<?php
+$conn=new mysqli("localhost","root","","studentdb");
+
+$msg="";
+
+if(isset($_POST['login'])){
+$user=$_POST['username'];
+$pass=$_POST['password'];
+
+$res=$conn->query("SELECT * FROM users
+WHERE username='$user' AND password='$pass'");
+
+if($res->num_rows>0){
+$msg="Login Successful";
+}else{
+$msg="Invalid Credentials";
+}
+}
+?>
+
+<html>
+<head>
+<script>
+function validate(){
+let u=document.getElementById("u").value;
+let p=document.getElementById("p").value;
+
+if(u==""||p==""){
+alert("All fields required");
+return false;
+}
+return true;
+}
+</script>
+</head>
+
+<body>
+
+<h2>Login Page</h2>
+
+<form method="post" onsubmit="return validate()">
+
+Username
+<input type="text" id="u" name="username">
+
+Password
+<input type="password" id="p" name="password">
+
+<button name="login">Login</button>
+
+</form>
+
+<p><?php echo $msg; ?></p>
+
+</body>
+</html>
