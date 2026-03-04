@@ -1,0 +1,47 @@
+<?php
+$conn=new mysqli("localhost","root","","studentdb");
+
+$res=$conn->query("SELECT customers.name,products.pname,orders.amount
+FROM orders
+JOIN customers ON orders.cid=customers.id
+JOIN products ON orders.pid=products.id");
+?>
+
+<html>
+<body>
+
+<h2>Customer Order History</h2>
+
+<table border=1>
+<tr>
+<th>Customer</th>
+<th>Product</th>
+<th>Amount</th>
+</tr>
+
+<?php
+while($r=$res->fetch_assoc()){
+echo "<tr>
+<td>{$r['name']}</td>
+<td>{$r['pname']}</td>
+<td>{$r['amount']}</td>
+</tr>";
+}
+?>
+</table>
+
+<?php
+
+$max=$conn->query("SELECT MAX(amount) AS highest FROM orders");
+$row=$max->fetch_assoc();
+echo "<h3>Highest Order: ".$row['highest']."</h3>";
+
+$active=$conn->query("SELECT cid,COUNT(*) total
+FROM orders GROUP BY cid ORDER BY total DESC LIMIT 1");
+$a=$active->fetch_assoc();
+echo "<h3>Most Active Customer ID: ".$a['cid']."</h3>";
+
+?>
+
+</body>
+</html>
