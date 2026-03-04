@@ -1,0 +1,75 @@
+<?php
+$conn=new mysqli("localhost","root","","studentdb");
+
+$sort=isset($_GET['sort'])?$_GET['sort']:"name";
+$dept=isset($_GET['dept'])?$_GET['dept']:"";
+
+$sql="SELECT * FROM students";
+
+if($dept!=""){
+$sql.=" WHERE department='$dept'";
+}
+
+$sql.=" ORDER BY $sort";
+
+$res=$conn->query($sql);
+?>
+
+<html>
+<head>
+<style>
+body{font-family:Arial}
+table{width:60%;margin:auto;border-collapse:collapse}
+th,td{border:1px solid black;padding:8px;text-align:center}
+form{text-align:center;margin:20px}
+</style>
+</head>
+
+<body>
+
+<form>
+Sort By
+<select name="sort">
+<option value="name">Name</option>
+<option value="dob">DOB</option>
+</select>
+
+Filter Dept
+<input type="text" name="dept">
+
+<button>Apply</button>
+</form>
+
+<table>
+<tr>
+<th>Name</th>
+<th>Email</th>
+<th>DOB</th>
+<th>Dept</th>
+</tr>
+
+<?php
+while($r=$res->fetch_assoc()){
+echo "<tr>
+<td>{$r['name']}</td>
+<td>{$r['email']}</td>
+<td>{$r['dob']}</td>
+<td>{$r['department']}</td>
+</tr>";
+}
+?>
+
+</table>
+
+<h3 style="text-align:center">Students per Department</h3>
+
+<?php
+$c=$conn->query("SELECT department,COUNT(*) total FROM students GROUP BY department");
+
+while($r=$c->fetch_assoc()){
+echo "<p style='text-align:center'>{$r['department']} : {$r['total']}</p>";
+}
+?>
+
+</body>
+</html>
