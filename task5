@@ -1,0 +1,21 @@
+<?php
+$conn=new mysqli("localhost","root","","studentdb");
+
+$conn->autocommit(FALSE);
+
+try{
+
+$conn->query("UPDATE accounts SET balance=balance-100 WHERE name='user'");
+$conn->query("UPDATE accounts SET balance=balance+100 WHERE name='merchant'");
+
+$conn->commit();
+
+echo "Payment Success";
+
+}catch(Exception $e){
+
+$conn->rollback();
+echo "Payment Failed";
+
+}
+?>
