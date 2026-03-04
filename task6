@@ -1,0 +1,33 @@
+CREATE DATABASE auditdb;
+USE auditdb;
+
+CREATE TABLE students(
+id INT AUTO_INCREMENT PRIMARY KEY,
+name VARCHAR(50),
+department VARCHAR(50)
+);
+
+CREATE TABLE logs(
+log_id INT AUTO_INCREMENT PRIMARY KEY,
+action_type VARCHAR(50),
+student_id INT,
+action_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TRIGGER log_insert
+AFTER INSERT ON students
+FOR EACH ROW
+INSERT INTO logs(action_type,student_id)
+VALUES('INSERT',NEW.id);
+
+CREATE TRIGGER log_update
+AFTER UPDATE ON students
+FOR EACH ROW
+INSERT INTO logs(action_type,student_id)
+VALUES('UPDATE',NEW.id);
+
+CREATE VIEW daily_activity AS
+SELECT DATE(action_time) AS activity_date,
+COUNT(*) AS total_actions
+FROM logs
+GROUP BY DATE(action_time);
