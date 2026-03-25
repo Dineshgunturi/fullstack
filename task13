@@ -1,0 +1,126 @@
+// ===== PACKAGE =====
+package com.demo;
+
+// ===== IMPORTS =====
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
+
+// ===== MAIN APPLICATION =====
+@SpringBootApplication
+public class UserDemoApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(UserDemoApplication.class, args);
+    }
+}
+
+// ===== MODEL CLASS =====
+class User {
+    private int id;
+    private String name;
+    private String email;
+
+    public User() {}
+
+    public User(int id, String name, String email) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+    }
+
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+}
+
+// ===== SERVICE CLASS =====
+@Service
+class UserService {
+
+    private List<User> users = new ArrayList<>();
+
+    // CREATE
+    public User addUser(User u) {
+        users.add(u);
+        return u;
+    }
+
+    // READ ALL
+    public List<User> getAllUsers() {
+        return users;
+    }
+
+    // READ BY ID
+    public User getUserById(int id) {
+        return users.stream()
+                .filter(u -> u.getId() == id)
+                .findFirst()
+                .orElse(null);
+    }
+
+    // UPDATE
+    public User updateUser(int id, User newData) {
+        User u = getUserById(id);
+        if (u != null) {
+            u.setName(newData.getName());
+            u.setEmail(newData.getEmail());
+        }
+        return u;
+    }
+
+    // DELETE
+    public String deleteUser(int id) {
+        users.removeIf(u -> u.getId() == id);
+        return "User Deleted Successfully";
+    }
+}
+
+// ===== CONTROLLER CLASS =====
+@RestController
+@RequestMapping("/users")
+class UserController {
+
+    private final UserService service;
+
+    public UserController(UserService service) {
+        this.service = service;
+    }
+
+    // CREATE
+    @PostMapping
+    public User addUser(@RequestBody User u) {
+        return service.addUser(u);
+    }
+
+    // READ ALL
+    @GetMapping
+    public List<User> getAllUsers() {
+        return service.getAllUsers();
+    }
+
+    // READ BY ID
+    @GetMapping("/{id}")
+    public User getUser(@PathVariable int id) {
+        return service.getUserById(id);
+    }
+
+    // UPDATE
+    @PutMapping("/{id}")
+    public User updateUser(@PathVariable int id, @RequestBody User u) {
+        return service.updateUser(id, u);
+    }
+
+    // DELETE
+    @DeleteMapping("/{id}")
+    public String deleteUser(@PathVariable int id) {
+        return service.deleteUser(id);
+    }
+}
