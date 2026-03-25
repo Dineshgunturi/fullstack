@@ -1,0 +1,77 @@
+// ===== PACKAGE =====
+package com.demo;
+
+// ===== IMPORTS =====
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.*;
+
+// ===== ADDRESS CLASS =====
+@Component
+class Address {
+
+    @Value("Chennai")
+    private String city;
+
+    @Value("Tamil Nadu")
+    private String state;
+
+    public void display() {
+        System.out.println("City: " + city);
+        System.out.println("State: " + state);
+    }
+}
+
+// ===== EMPLOYEE CLASS =====
+@Component
+class Employee {
+
+    @Value("101")
+    private int id;
+
+    @Value("Chintu")
+    private String name;
+
+    @Autowired
+    private Address address;
+
+    private List<String> skills;
+
+    // Setter Injection (Collection)
+    @Autowired
+    public void setSkills(List<String> skills) {
+        this.skills = skills;
+    }
+
+    public void display() {
+        System.out.println("Employee ID: " + id);
+        System.out.println("Name: " + name);
+        address.display();
+        System.out.println("Skills: " + skills);
+    }
+}
+
+// ===== CONFIG CLASS =====
+@Configuration
+@ComponentScan(basePackages = "com.demo")
+class AppConfig {
+
+    @Bean
+    public List<String> skills() {
+        return List.of("Java", "Spring", "Hibernate");
+    }
+}
+
+// ===== MAIN CLASS =====
+public class MainApp {
+    public static void main(String[] args) {
+
+        ApplicationContext context =
+                new AnnotationConfigApplicationContext(AppConfig.class);
+
+        Employee emp = context.getBean(Employee.class);
+        emp.display();
+    }
+}
