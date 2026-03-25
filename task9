@@ -1,0 +1,123 @@
+// ===== PACKAGE =====
+package com.demo;
+
+// ===== IMPORTS =====
+import java.util.List;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+// ===== ADDRESS CLASS =====
+class Address {
+    private String city;
+    private String state;
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public void display() {
+        System.out.println("City: " + city);
+        System.out.println("State: " + state);
+    }
+}
+
+// ===== EMPLOYEE CLASS =====
+class Employee {
+    private int id;
+    private String name;
+    private Address address;
+    private List<String> skills;
+
+    // Constructor Injection
+    public Employee(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public Employee() {}
+
+    // Setter Injection
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+
+    public void setSkills(List<String> skills) {
+        this.skills = skills;
+    }
+
+    public void display() {
+        System.out.println("Employee ID: " + id);
+        System.out.println("Name: " + name);
+        address.display();
+        System.out.println("Skills: " + skills);
+    }
+}
+
+// ===== MAIN CLASS =====
+public class MainApp {
+    public static void main(String[] args) {
+
+        ApplicationContext context =
+                new ClassPathXmlApplicationContext("applicationContext.xml");
+
+        Employee emp = (Employee) context.getBean("emp");
+        emp.display();
+    }
+}
+
+/*
+======== applicationContext.xml ========
+
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="addr" class="com.demo.Address">
+        <property name="city" value="Chennai"/>
+        <property name="state" value="Tamil Nadu"/>
+    </bean>
+
+    <bean id="emp" class="com.demo.Employee">
+        <constructor-arg value="101"/>
+        <constructor-arg value="Chintu"/>
+
+        <property name="address" ref="addr"/>
+
+        <property name="skills">
+            <list>
+                <value>Java</value>
+                <value>Spring</value>
+                <value>Hibernate</value>
+            </list>
+        </property>
+    </bean>
+
+</beans>
+
+======== pom.xml ========
+
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.demo</groupId>
+    <artifactId>task9</artifactId>
+    <version>1.0</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>5.3.30</version>
+        </dependency>
+    </dependencies>
+</project>
+
+*/
