@@ -1,0 +1,125 @@
+// ===== PACKAGE =====
+package com.demo;
+
+// ===== IMPORTS =====
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.*;
+
+// ===== MAIN APPLICATION =====
+@SpringBootApplication
+public class StudentCrudApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(StudentCrudApplication.class, args);
+    }
+}
+
+// ===== MODEL CLASS =====
+class Student {
+    private int id;
+    private String name;
+    private String course;
+
+    public Student() {}
+
+    public Student(int id, String name, String course) {
+        this.id = id;
+        this.name = name;
+        this.course = course;
+    }
+
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getCourse() { return course; }
+    public void setCourse(String course) { this.course = course; }
+}
+
+// ===== SERVICE CLASS =====
+@Service
+class StudentService {
+
+    private List<Student> students = new ArrayList<>();
+
+    // CREATE
+    public Student addStudent(Student s) {
+        students.add(s);
+        return s;
+    }
+
+    // READ ALL
+    public List<Student> getAll() {
+        return students;
+    }
+
+    // READ BY ID
+    public Student getById(int id) {
+        return students.stream()
+                .filter(s -> s.getId() == id)
+                .findFirst()
+                .orElse(null);
+    }
+
+    // UPDATE
+    public Student update(int id, Student newData) {
+        Student s = getById(id);
+        if (s != null) {
+            s.setName(newData.getName());
+            s.setCourse(newData.getCourse());
+        }
+        return s;
+    }
+
+    // DELETE
+    public String delete(int id) {
+        students.removeIf(s -> s.getId() == id);
+        return "Deleted";
+    }
+}
+
+// ===== CONTROLLER CLASS =====
+@RestController
+@RequestMapping("/students")
+class StudentController {
+
+    private final StudentService service;
+
+    public StudentController(StudentService service) {
+        this.service = service;
+    }
+
+    // CREATE
+    @PostMapping
+    public Student add(@RequestBody Student s) {
+        return service.addStudent(s);
+    }
+
+    // READ ALL
+    @GetMapping
+    public List<Student> getAll() {
+        return service.getAll();
+    }
+
+    // READ BY ID
+    @GetMapping("/{id}")
+    public Student getOne(@PathVariable int id) {
+        return service.getById(id);
+    }
+
+    // UPDATE
+    @PutMapping("/{id}")
+    public Student update(@PathVariable int id, @RequestBody Student s) {
+        return service.update(id, s);
+    }
+
+    // DELETE
+    @DeleteMapping("/{id}")
+    public String delete(@PathVariable int id) {
+        return service.delete(id);
+    }
+}
