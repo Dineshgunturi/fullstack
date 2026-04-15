@@ -1,0 +1,32 @@
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.*;
+
+// Main + Controller combined
+@SpringBootApplication
+@RestController
+public class Service1Application {
+
+    public static void main(String[] args) {
+        SpringApplication.run(Service1Application.class, args);
+        System.out.println("Service 1 Started...");
+    }
+
+    // Simple GET API
+    @GetMapping("/hello")
+    public String hello() {
+        return "Hello from Service 1";
+    }
+
+    // Extra API (for better understanding)
+    @GetMapping("/greet/{name}")
+    public String greet(@PathVariable String name) {
+        return "Welcome " + name + " to Service 1";
+    }
+
+    // POST API example
+    @PostMapping("/post")
+    public String postData(@RequestBody String data) {
+        return "Received: " + data;
+    }
+}
