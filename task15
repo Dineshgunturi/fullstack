@@ -1,0 +1,54 @@
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+
+// Main + Controller combined
+@SpringBootApplication
+@RestController
+public class Service2Application {
+
+    public static void main(String[] args) {
+        SpringApplication.run(Service2Application.class, args);
+        System.out.println("Service 2 Started...");
+    }
+
+    // RestTemplate Bean
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+
+    // Call Service 1 (Basic)
+    @GetMapping("/call")
+    public String callService() {
+        RestTemplate rt = restTemplate();
+        String response = rt.getForObject(
+                "http://localhost:8081/hello", String.class);
+
+        return "Response from Service1: " + response;
+    }
+
+    // Call Service 1 with Path Variable
+    @GetMapping("/call/{name}")
+    public String callWithName(@PathVariable String name) {
+        RestTemplate rt = restTemplate();
+        String response = rt.getForObject(
+                "http://localhost:8081/greet/" + name, String.class);
+
+        return "Service1 says: " + response;
+    }
+
+    // Send POST request to Service 1
+    @PostMapping("/send")
+    public String sendData() {
+        RestTemplate rt = restTemplate();
+        String response = rt.postForObject(
+                "http://localhost:8081/post",
+                "Hello from Service 2",
+                String.class);
+
+        return "POST Response: " + response;
+    }
+}
